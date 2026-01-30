@@ -16,6 +16,8 @@ pub struct Category {
     pub for_item_type: i32,
     pub pos: Option<i32>,
     pub hide: Option<bool>,
+    #[serde(rename = "shouldUpdate")]
+    pub should_update: Option<bool>,
     #[serde(skip_serializing)]
     pub user: Option<ObjectId>,
     #[serde(rename = "updatedAt")]
