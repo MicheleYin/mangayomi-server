@@ -15,6 +15,7 @@ use actix_web::{
 use mongodb::bson::doc;
 use mongodb::options::{ClientOptions, IndexOptions};
 use mongodb::{Client, IndexModel};
+use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::fs;
 use tera::Tera;
 use walkdir::WalkDir;
@@ -91,7 +92,7 @@ async fn main() -> std::io::Result<()> {
             }
      */
 
-    HttpServer::new(move || {
+    let mut server = HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
             .wrap(NormalizePath::trim())
@@ -123,10 +124,19 @@ async fn main() -> std::io::Result<()> {
             .service(sync_controller())
             .service(app::app_routes::basic_controller())
             .default_service(web::to(|| HttpResponse::NotFound()))
-    })
-    .bind(format!("{}:{}", host, port))?
-    .run()
-    .await
+    });
+
+    if let (Some(cert), Some(key)) = (globals::SSL_CERT.as_ref(), globals::SSL_KEY.as_ref()) {
+        log::info!("Starting server with SSL certificate: {}", cert);
+        let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
+        builder.set_private_key_file(key, SslFiletype::PEM).unwrap();
+        builder.set_certificate_chain_file(cert).unwrap();
+        server = server.bind_openssl(format!("{}:{}", host, port), builder)?;
+    } else {
+        server = server.bind(format!("{}:{}", host, port))?;
+    }
+
+    server.run().await
 }
 
 fn sync_controller() -> Scope {

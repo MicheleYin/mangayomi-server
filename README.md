@@ -28,6 +28,25 @@ A self-hosted server for Mangayomi.
 8. Connect to the sync server using the host and port set in `.env`.  
    By default, the server will be reachable at `http://localhost:8080`
 
+### SSL Configuration
+
+To run the server with SSL (HTTPS), follow these steps:
+
+1. **Prepare your certificate files**: You need a certificate chain file (PEM format) and a private key file (PEM format).
+2. **Configure environment variables**: Add the following to your `.env` file:
+   ```env
+   SSL_CERT=/path/to/your/fullchain.pem
+   SSL_KEY=/path/to/your/privkey.pem
+   ```
+3. **Restart the server**: The server will automatically detect these variables and start in HTTPS mode.
+
+#### Generating a self-signed certificate for testing
+If you want to test locally, you can generate a self-signed certificate:
+```bash
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+```
+Then set `SSL_CERT=cert.pem` and `SSL_KEY=key.pem` in your `.env`.
+
 ## Setup - Docker Compose
 1. Install [Docker Engine / Desktop](https://www.docker.com/).  
    Most installations will come with Compose included, but it can also be [installed manually](https://docs.docker.com/compose/install/).

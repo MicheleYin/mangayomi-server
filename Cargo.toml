@@ -4,7 +4,7 @@ version = "0.1.2"
 edition = "2024"
 
 [dependencies]
-actix-web = "4"
+actix-web = { version = "4", features = ["openssl"] }
 dotenvy = "0.15"
 log = "0.4.27"
 openssl = { version = "0.10", features = ["vendored"] }

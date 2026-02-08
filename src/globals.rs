@@ -15,4 +15,6 @@ lazy_static! {
     /// The redis connection string this server will use
     pub static ref REDIS_URL: String = env::var("REDIS_URL").unwrap_or("redis://127.0.0.1:6379".to_string());
     pub static ref SECRET_KEY: String = env::var("SECRET_KEY").unwrap_or("".to_string());
+    pub static ref SSL_CERT: Option<String> = env::var("SSL_CERT").ok();
+    pub static ref SSL_KEY: Option<String> = env::var("SSL_KEY").ok();
 }
